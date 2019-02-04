@@ -2,7 +2,7 @@
 # For Color, use &
 prefix: "&8[&9MultiEconomy&8]&7"
 
-# Error Messages
+# 错误信息
 target-not-played: "{prefix} &b{target} &7从未进入过本服务器"
 currency-not-found: "{prefix} &b{currency}&7 没找到. 流通货币列表: &b{currencies}"
 use-command-in-game: "{prefix} &7在游戏中使用这个命令"
@@ -13,7 +13,7 @@ command-usage: "{prefix} 使用 &b{usage}"
 cannot-pay-self: "{prefix} 你不能支付给自己"
 no-top-balances: "{prefix} &b{currency}没有余额 (Page &b{page}&7)"
 
-# Success Messages
+# 成功信息
 list-currencies: "{prefix} 显示你&b所有&7货币的余额"
 list-currencies-other: "{prefix} 显示 &b{target}&7 的&b所有&7货币的余额"
 own-balance: "{prefix} 你的 &b{currency} 余额&7为：&b{balance}"
