@@ -3,13 +3,13 @@
 prefix: "&8[&9MultiEconomy&8]&7"
 
 # Error Messages
-target-not-played: "{prefix} &b{target} &7has not played on the server before"
-currency-not-found: "{prefix} &b{currency}&7 not found. List of currencies: &b{currencies}"
-use-command-in-game: "{prefix} &7Use this command in-game"
-no-currencies-configured: "{prefix} &7There are no currencies currently configured"
-value-not-valid: "{prefix} The entered value is not valid"
-not-enough-money: "{prefix} You do not have enough money"
-command-usage: "{prefix} Use &b{usage}"
+target-not-played: "{prefix} &b{target} &7从未进入过本服务器"
+currency-not-found: "{prefix} &b{currency}&7 没找到. 流通货币列表: &b{currencies}"
+use-command-in-game: "{prefix} &7在游戏中使用这个命令"
+no-currencies-configured: "{prefix} &7当前没有配置货币"
+value-not-valid: "{prefix} 输入的值无效"
+not-enough-money: "{prefix} 你没有足够的钱"
+command-usage: "{prefix} 使用 &b{usage}"
 cannot-pay-self: "{prefix} You cannot pay yourself"
 no-top-balances: "{prefix} There is no top balances for &b{currency} &7currency (Page &b{page}&7)"
 
