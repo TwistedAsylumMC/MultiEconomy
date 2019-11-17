@@ -12,7 +12,6 @@ use function array_values;
 use function count;
 use function implode;
 use function strtolower;
-use function var_dump;
 
 class BalanceTopCommand extends PluginCommand{
 
@@ -71,10 +70,10 @@ class BalanceTopCommand extends PluginCommand{
 
         for($i = 0; $i < count($top); ++$i){
             $message .= TextFormat::EOL . $this->plugin->translateMessage("top-balances-format", [
-                "place" => $i + 1,
-                "player" => array_keys($top)[$i],
-                "balance" => $currency->formatBalance(array_values($top)[$i])
-            ]);
+                    "place" => $i + 1,
+                    "player" => array_keys($top)[$i],
+                    "balance" => $currency->formatBalance(array_values($top)[$i])
+                ]);
         }
 
         $sender->sendMessage($message);

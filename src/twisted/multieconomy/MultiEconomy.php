@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace twisted\multieconomy;
 
-use function extension_loaded;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\plugin\PluginBase;
@@ -20,11 +19,11 @@ use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_values;
+use function extension_loaded;
 use function in_array;
 use function is_array;
 use function str_replace;
 use function strtolower;
-use function var_dump;
 
 class MultiEconomy extends PluginBase implements Listener{
 
@@ -134,6 +133,17 @@ class MultiEconomy extends PluginBase implements Listener{
      */
     public static function getInstance() : MultiEconomy{
         return self::$instance;
+    }
+
+    /**
+     * Get a currency by its name, returns null if not found
+     *
+     * @param string $name
+     *
+     * @return Currency|null
+     */
+    public function getCurrency(string $name) : ?Currency{
+        return $this->currencies[strtolower($name)] ?? null;
     }
 
     public function onDisable() : void{

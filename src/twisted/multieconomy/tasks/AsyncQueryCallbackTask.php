@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace twisted\multieconomy\tasks;
 
+use PDO;
 use pocketmine\scheduler\AsyncTask;
 use pocketmine\Server;
 use function serialize;
@@ -10,7 +11,7 @@ use function unserialize;
 
 class AsyncQueryCallbackTask extends AsyncTask{
 
-    /** @var \PDO */
+    /** @var PDO */
     private $database;
 
     /** @var string */
@@ -20,7 +21,7 @@ class AsyncQueryCallbackTask extends AsyncTask{
     /** @var callable|null */
     private $onComplete;
 
-    public function __construct(\PDO $database, string $query, array $params = [], ?callable $onComplete = null){
+    public function __construct(PDO $database, string $query, array $params = [], ?callable $onComplete = null){
         $this->database = $database;
 
         $this->query = $query;

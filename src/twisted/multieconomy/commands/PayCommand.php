@@ -3,13 +3,13 @@ declare(strict_types=1);
 
 namespace twisted\multieconomy\commands;
 
-use function count;
-use function implode;
 use pocketmine\command\CommandSender;
 use pocketmine\command\PluginCommand;
 use pocketmine\Player;
-use function strtolower;
 use twisted\multieconomy\MultiEconomy;
+use function count;
+use function implode;
+use function strtolower;
 
 class PayCommand extends PluginCommand{
 
