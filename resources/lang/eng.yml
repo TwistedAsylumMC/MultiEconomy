@@ -3,15 +3,15 @@
 prefix: "&8[&9MultiEconomy&8]&7"
 
 # Error Messages
-target-not-played: "{prefix} &b{target} &7has not played on the server before"
-currency-not-found: "{prefix} &b{currency}&7 not found. List of currencies: &b{currencies}"
-use-command-in-game: "{prefix} &7Use this command in-game"
-no-currencies-configured: "{prefix} &7There are no currencies currently configured"
-value-not-valid: "{prefix} The entered value is not valid"
-not-enough-money: "{prefix} You do not have enough money"
-command-usage: "{prefix} Use &b{usage}"
-cannot-pay-self: "{prefix} You cannot pay yourself"
-no-top-balances: "{prefix} There is no top balances for &b{currency} &7currency (Page &b{page}&7)"
+target-not-played: "{prefix} &4{target} &chas not played on the server before"
+currency-not-found: "{prefix} &4{currency}&c not found. List of currencies: &4{currencies}"
+use-command-in-game: "{prefix} &cUse this command in-game"
+no-currencies-configured: "{prefix} &cThere are no currencies currently configured"
+value-not-valid: "{prefix} &cThe entered value is not valid"
+not-enough-money: "{prefix} &cYou do not have enough money"
+command-usage: "{prefix} &cUse &4{usage}"
+cannot-pay-self: "{prefix} &cYou cannot pay yourself"
+no-top-balances: "{prefix} &cThere is no top balances for &4{currency} &ccurrency (Page &4{page}&c)"
 
 # Success Messages
 list-currencies: "{prefix} Showing your balance for &ball &7currencies"
@@ -23,9 +23,9 @@ payment-received: "{prefix} &b{target} &7has sent you &b{amount} &7for &b{curren
 own-balance-set: "{prefix} Your balance for &b{currency} &7has been set to &b{balance}"
 target-balance-set: "{prefix} &b{target}&7's balance for &b{currency} &7has been set to &b{balance}"
 own-balance-added: "{prefix} &b{amount} &7has been added to your balance for &b{currency}"
-target-balance-added: "{prefix} &b{amount} &7has been added to &b{target}'s balance for &b{currency}"
+target-balance-added: "{prefix} &b{amount} &7has been added to &b{target}&7's balance for &b{currency}"
 own-balance-removed: "{prefix} &b{amount} &7has been removed from your balance for &b{currency}"
-target-balance-removed: "{prefix} &b{amount} &7has been removed from &b{target}'s balance for &b{currency}"
+target-balance-removed: "{prefix} &b{amount} &7has been removed from &b{target}&7's balance for &b{currency}"
 top-balances-title: "{prefix} Showing top 10 balances for &b{currency} &7currency (Page &b{page}&7)"
 top-balances-format: "&b{place}&7. &b{player}&7: &b{balance}"
 ...

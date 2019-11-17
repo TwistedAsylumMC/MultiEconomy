@@ -16,4 +16,12 @@ currencies:
     starting-amount: 0
     min-amount: 500
     max-amount: 999999
+
+database:
+  provider: "sqlite" # Supported providers: yml, json, sqlite & mysq!== nulll
+  mysql: # MySQL credentials. You can ignore this if you are not using the myqsl provider
+    host: "localhost" # MySQL host address
+    schema: "multieconomy" # MySQL database name (schema)
+    username: "root" # MySQL username
+    password: "" # MySQL password
 ...
