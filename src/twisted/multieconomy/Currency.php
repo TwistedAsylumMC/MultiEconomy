@@ -90,7 +90,7 @@ class Currency{
                 $password = $creds["password"] ?? "";
 
                 $this->database = $database = new PDO("mysql:host=" . $host . ";dbname=" . $schema, $username, $password);
-                $database->exec("CREATE TABLE IF NOT EXISTS " . $database->quote($this->getLowerName()) . "(username VARCHAR(16) NOT NULL PRIMARY KEY, balance FLOAT NOT NULL DEFAULT 0)");
+                $database->exec("CREATE TABLE IF NOT EXISTS " . $this->getLowerName() . "(username VARCHAR(16) NOT NULL PRIMARY KEY, balance FLOAT NOT NULL DEFAULT 0)");
 
                 $stmt = $database->query("SELECT username, balance FROM players");
                 $stmt->execute();
@@ -202,7 +202,7 @@ class Currency{
         }elseif($database instanceof PDO){
             if($this->provider === "mysql"){
                 foreach($this->cache as $username => $balance){
-                    Server::getInstance()->getAsyncPool()->submitTask(new AsyncQueryCallbackTask($this->database, "INSERT OR REPLACE INTO players(username, balance) VALUES(:username, :balance)", [
+                    Server::getInstance()->getAsyncPool()->submitTask(new AsyncQueryCallbackTask($this->database, "INSERT OR REPLACE INTO " . $this->getLowerName() . "(username, balance) VALUES(:username, :balance)", [
                         ":username" => $username,
                         ":balance" => $balance
                     ]));
