@@ -6,10 +6,6 @@ namespace twisted\multieconomy\database;
 
 use pocketmine\utils\Config;
 
-/**
- * Class YamlDatabase
- * @package twisted\multieconomy\database
- */
 class NormalDatabase implements Database {
 
 	/** @var Config */

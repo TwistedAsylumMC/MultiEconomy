@@ -64,19 +64,19 @@ class MultiEconomy extends PluginBase implements Listener{
 	}
 
     public function onEnable() : void{
-        @mkdir($this->getDataFolder() . "currencies");
-        @mkdir($this->getDataFolder() . "lang");
+		@mkdir($this->getDataFolder() . "currencies");
+		@mkdir($this->getDataFolder() . "lang");
 		@mkdir($this->getDataFolder() . "temp");
 
-        $config = $this->getConfig();
+		$config = $this->getConfig();
 
-        if($this->getLanguageCode() !== (string) $config->get("lang")){
-            $config->set("lang", "eng");
-            $config->save();
+		if($this->getLanguageCode() !== (string)$config->get("lang")){
+			$config->set("lang", "eng");
+			$config->save();
 
-            $this->getLogger()->notice("Provided language is not supported. Setting the language back to the default value (eng)");
-        }
-        $this->saveResource("lang/" . $this->getLanguageCode() . ".yml");
+			$this->getLogger()->notice("Provided language is not supported. Setting the language back to the default value (eng)");
+		}
+		$this->saveResource("lang/" . $this->getLanguageCode() . ".yml");
 
         $currencies = $config->get("currencies", []);
         if(is_array($currencies)){
