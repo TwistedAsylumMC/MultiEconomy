@@ -59,14 +59,10 @@ class Currency{
         $config = MultiEconomy::getInstance()->getConfig();
         $info = $config->get("database");
 
-        switch(($provider1 = $provider = strtolower($info["provider"])) ?? "sqlite"){
+        switch(($provider = strtolower($info["provider"])) ?? "sqlite"){
 			case "yml":
 			case "json":
 				$this->database = new NormalDatabase($path . $this->getLowerName() . "." . $provider);
-
-				$this->database->getAllBalance(function($player, $balance){
-					$this->cache[$player] = $balance;
-				});
 				break;
 			case "sqlite":
 				$this->database = new LibAsyncDatabase(null, $this->getLowerName(), false);
@@ -166,8 +162,8 @@ class Currency{
         return $this->maxAmount;
     }
 
-    public function save(){
-    	$this->database->shutdown();
+	public function save(){
+		$this->database->shutdown();
 	}
 
     /**
@@ -227,28 +223,29 @@ class Currency{
      * @return bool
      */
     public function validateBalance(string $username) : bool{
+    	$valid = true;
         if(!isset($this->cache[strtolower($username)])){
             if($this->startingAmount > 0){
                 $this->cache[strtolower($username)] = $this->startingAmount;
             }
 
-            return false;
+			$valid = false;
         }
 
         if($this->cache[strtolower($username)] < $this->minAmount){
             $this->cache[strtolower($username)] = $this->minAmount;
 
-            return false;
+			$valid = false;
         }
 
         if($this->cache[strtolower($username)] > $this->maxAmount){
             $this->cache[strtolower($username)] = $this->maxAmount;
 
-            return false;
+			$valid = false;
         }
-		$this->database->setBalance($username, $this->cache[strtolower($username)]);
+		if(!$valid) $this->database->setBalance($username, $this->cache[strtolower($username)]);
 
-        return true;
+        return $valid;
     }
 
     /**
