@@ -3,10 +3,9 @@ declare(strict_types=1);
 
 namespace twisted\multieconomy;
 
-use PDO;
-use pocketmine\Server;
-use pocketmine\utils\Config;
-use twisted\multieconomy\tasks\AsyncQueryCallbackTask;
+use twisted\multieconomy\database\Database;
+use twisted\multieconomy\database\LibAsyncDatabase;
+use twisted\multieconomy\database\NormalDatabase;
 use function abs;
 use function array_chunk;
 use function asort;
@@ -34,11 +33,9 @@ class Currency{
     /** @var float $maxAmount */
     private $maxAmount;
 
-    /** @var Config|PDO */
+    /** @var Database */
     private $database;
-    /** @var string */
-    private $provider;
-    /** @var float[] */
+	/** @var float[] */
     private $cache = [];
 
     public function __construct(string $name, string $symbol, bool $symbolAfter, float $startingAmount, float $minAmount, float $maxAmount){
@@ -62,46 +59,33 @@ class Currency{
         $config = MultiEconomy::getInstance()->getConfig();
         $info = $config->get("database");
 
-        switch(($this->provider = $provider = strtolower($info["provider"])) ?? "sqlite"){
-            case "yml":
-            case "json":
-                $this->database = $database = new Config($path . $this->getLowerName() . "." . $provider);
+        switch(($provider1 = $provider = strtolower($info["provider"])) ?? "sqlite"){
+			case "yml":
+			case "json":
+				$this->database = new NormalDatabase($path . $this->getLowerName() . "." . $provider);
 
-                $this->cache = $database->getAll();
-                break;
-            case "sqlite":
-                $this->database = $database = new PDO("sqlite:" . $path . $this->getLowerName() . ".sqlite");
-                $database->exec("CREATE TABLE IF NOT EXISTS players(username VARCHAR(16) NOT NULL PRIMARY KEY, balance FLOAT NOT NULL DEFAULT 0)");
+				$this->database->getAllBalance(function($player, $balance){
+					$this->cache[$player] = $balance;
+				});
+				break;
+			case "sqlite":
+				$this->database = new LibAsyncDatabase(null, $this->getLowerName(), false);
+				break;
+			case "mysql":
+				$credentials = $info["mysql"];
 
-                $stmt = $database->query("SELECT username, balance FROM players");
-                $stmt->execute();
+				$this->database = new LibAsyncDatabase([
+					"type"  => "mysql",
+					"mysql" => $credentials,
+				], $this->getLowerName(), true);
 
-                $data = $stmt->fetchAll();
-                foreach($data as $datum){
-                    $this->cache[$datum["username"]] = (float) $datum["balance"];
-                }
-                break;
-            case "mysql":
-                $creds = $info["mysql"];
+				break;
+		}
 
-                $host = $creds["host"] ?? "localhost";
-                $schema = $creds["schema"] ?? "multieconomy";
-                $username = $creds["username"] ?? "root";
-                $password = $creds["password"] ?? "";
-
-                $this->database = $database = new PDO("mysql:host=" . $host . ";dbname=" . $schema, $username, $password);
-                $database->exec("CREATE TABLE IF NOT EXISTS " . $this->getLowerName() . "(username VARCHAR(16) NOT NULL PRIMARY KEY, balance FLOAT NOT NULL DEFAULT 0)");
-
-                $stmt = $database->query("SELECT username, balance FROM players");
-                $stmt->execute();
-
-                $data = $stmt->fetchAll();
-                foreach($data as $datum){
-                    $this->cache[$datum["username"]] = (float) $datum["balance"];
-                }
-                break;
-        }
-    }
+		$this->database->getAllBalance(function($player, $balance){
+			$this->cache[$player] = $balance;
+		});
+	}
 
     /**
      * Gets the name of the currency
@@ -182,42 +166,9 @@ class Currency{
         return $this->maxAmount;
     }
 
-    /**
-     * Saves all cached data to the currency's database
-     *
-     * This should not be called too often,
-     * especially if using mysql or sqlite
-     */
-    public function save() : void{
-        if(empty($this->cache)){
-            return;
-        }
-
-        $database = $this->database;
-        if($database instanceof Config){
-            foreach($this->cache as $player => $info){
-                $database->set(strtolower($player), $info["balance"] ?? 0);
-            }
-            $database->save();
-        }elseif($database instanceof PDO){
-            if($this->provider === "mysql"){
-                foreach($this->cache as $username => $balance){
-                    Server::getInstance()->getAsyncPool()->submitTask(new AsyncQueryCallbackTask($this->database, "INSERT OR REPLACE INTO " . $this->getLowerName() . "(username, balance) VALUES(:username, :balance)", [
-                        ":username" => $username,
-                        ":balance" => $balance
-                    ]));
-                }
-            }elseif($this->provider === "sqlite"){
-                foreach($this->cache as $username => $balance){
-                    $stmt = $database->prepare("INSERT OR REPLACE INTO players(username, balance) VALUES(:username, :balance)");
-                    $stmt->execute([
-                        ":username" => $username,
-                        ":balance" => $balance
-                    ]);
-                }
-            }
-        }
-    }
+    public function save(){
+    	$this->database->shutdown();
+	}
 
     /**
      * Adds an amount to the player's balance
@@ -295,6 +246,7 @@ class Currency{
 
             return false;
         }
+		$this->database->setBalance($username, $this->cache[strtolower($username)]);
 
         return true;
     }

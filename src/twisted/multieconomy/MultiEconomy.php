@@ -6,7 +6,6 @@ namespace twisted\multieconomy;
 use pocketmine\event\Listener;
 use pocketmine\event\player\PlayerJoinEvent;
 use pocketmine\plugin\PluginBase;
-use pocketmine\scheduler\ClosureTask;
 use pocketmine\utils\Config;
 use pocketmine\utils\TextFormat;
 use twisted\multieconomy\commands\AddToBalanceCommand;
@@ -19,7 +18,6 @@ use function array_keys;
 use function array_map;
 use function array_merge;
 use function array_values;
-use function extension_loaded;
 use function in_array;
 use function is_array;
 use function str_replace;
@@ -37,17 +35,38 @@ class MultiEconomy extends PluginBase implements Listener{
         self::$instance = $this;
     }
 
+    public static $replaceDialect = null;
+
+	public function getResource(string $filename){
+		// A little bit hack for mysql statements
+		if(self::$replaceDialect !== null){
+			$rep = self::$replaceDialect;
+			self::$replaceDialect = null;
+
+			if(is_file($this->getDataFolder() . "temp/$rep.sql")){
+				return fopen($this->getDataFolder() . "temp/$rep.sql", "rb");
+			}
+
+			$sPath = $this->getDataFolder() . "temp/$rep.sql";
+
+			// Attempt to soft copy to the temporary directory
+			$file = parent::getResource("scripts/mysql.sql");
+			file_put_contents($sPath, $file);
+
+			// Read temporary directory, and replace them.
+			$contents = file_get_contents($sPath);
+			file_put_contents($sPath, str_replace("%tableName%", $rep, $contents));
+
+			return fopen($this->getDataFolder() . "temp/$rep.sql", "rb");
+		}
+
+		return parent::getResource($filename);
+	}
+
     public function onEnable() : void{
-        if(!extension_loaded("pdo")){
-            $this->getLogger()->critical("PDO extension not installed. Please update your PocketMine binaries");
-
-            $this->getServer()->getPluginManager()->disablePlugin($this);
-
-            return;
-        }
-
         @mkdir($this->getDataFolder() . "currencies");
         @mkdir($this->getDataFolder() . "lang");
+		@mkdir($this->getDataFolder() . "temp");
 
         $config = $this->getConfig();
 
@@ -83,12 +102,6 @@ class MultiEconomy extends PluginBase implements Listener{
         ]);
 
         $this->getServer()->getPluginManager()->registerEvents($this, $this);
-
-        $this->getScheduler()->scheduleDelayedRepeatingTask(new ClosureTask(static function() : void{
-            foreach(MultiEconomy::getInstance()->getCurrencies() as $currency){
-                $currency->save();
-            }
-        }), 6000, 6000);
     }
 
     /**

@@ -4,4 +4,7 @@ branches:
 projects:
   MultiEconomy:
     path: ""
+    libs:
+      - src: poggit/libasynql/libasynql
+        version: ^3.0
 ...
