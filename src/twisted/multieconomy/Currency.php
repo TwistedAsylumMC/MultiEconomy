@@ -243,7 +243,7 @@ class Currency {
 
 			$valid = false;
 		}
-		if(!$valid) $this->database->setBalance($username, $this->cache[strtolower($username)]);
+		$this->database->setBalance($username, $this->cache[strtolower($username)]);
 
 		return $valid;
 	}

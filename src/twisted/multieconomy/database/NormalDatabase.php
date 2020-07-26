@@ -26,7 +26,5 @@ class NormalDatabase implements Database {
 		}
 	}
 
-	public function shutdown(): void{
-		$this->database->save();
-	}
+	public function shutdown(): void{}
 }
