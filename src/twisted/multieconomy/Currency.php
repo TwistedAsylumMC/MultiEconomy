@@ -227,6 +227,8 @@ class Currency {
 		if(!isset($this->cache[strtolower($username)])){
 			if($this->startingAmount > 0){
 				$this->cache[strtolower($username)] = $this->startingAmount;
+			} else {
+				$this->cache[strtolower($username)] = 0;
 			}
 
 			$valid = false;
@@ -243,7 +245,7 @@ class Currency {
 
 			$valid = false;
 		}
-		$this->database->setBalance($username, $this->cache[strtolower($username)]);
+		$this->database->setBalance(strtolower($username), $this->cache[strtolower($username)]);
 
 		return $valid;
 	}
