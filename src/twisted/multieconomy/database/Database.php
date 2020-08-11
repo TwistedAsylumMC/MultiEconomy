@@ -12,9 +12,11 @@ namespace twisted\multieconomy\database;
  */
 interface Database {
 
-	public function setBalance(string $playerName, float $totalCurrency): void;
+	public function createCurrency(string $currency): void;
 
-	public function getAllBalance(callable $result): void;
+	public function setBalance(string $playerName, float $totalCurrency, string $currency): void;
+
+	public function getAllBalance(callable $result, string $currency): void;
 
 	public function shutdown(): void;
 }

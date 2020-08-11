@@ -14,6 +14,10 @@ use twisted\multieconomy\commands\BalanceTopCommand;
 use twisted\multieconomy\commands\PayCommand;
 use twisted\multieconomy\commands\RemoveFromBalanceCommand;
 use twisted\multieconomy\commands\SetBalanceCommand;
+use twisted\multieconomy\database\Database;
+use twisted\multieconomy\database\FileDatabase;
+use twisted\multieconomy\database\MysqlDatabase;
+use twisted\multieconomy\database\SqliteDatabase;
 use function array_keys;
 use function array_map;
 use function array_merge;
@@ -25,11 +29,12 @@ use function strtolower;
 
 class MultiEconomy extends PluginBase implements Listener {
 
-	public static $replaceDialect = null;
 	/** @var MultiEconomy */
 	private static $instance;
 	/** @var Currency[] */
 	private $currencies = [];
+	/** @var Database */
+	public $database;
 
 	/**
 	 * @return MultiEconomy
@@ -42,30 +47,27 @@ class MultiEconomy extends PluginBase implements Listener {
 		self::$instance = $this;
 	}
 
-	public function getResource(string $filename){
-		// A little bit hack for mysql statements
-		if(self::$replaceDialect !== null){
-			$rep = self::$replaceDialect;
-			self::$replaceDialect = null;
+	private function registerDatabase(): void{
+		$config = MultiEconomy::getInstance()->getConfig();
+		$info = $config->get("database");
 
-			if(is_file($this->getDataFolder() . "temp/$rep.sql")){
-				return fopen($this->getDataFolder() . "temp/$rep.sql", "rb");
-			}
+		switch(($provider = strtolower($info["provider"])) ?? "sqlite"){
+			case "yml":
+			case "json":
+				$this->database = new FileDatabase(strtolower($provider));
+				break;
+			case "sqlite":
+				$this->database = new SqliteDatabase();
+				break;
+			case "mysql":
+				$credentials = $info["mysql"];
 
-			$sPath = $this->getDataFolder() . "temp/$rep.sql";
-
-			// Attempt to soft copy to the temporary directory
-			$file = parent::getResource("scripts/mysql.sql");
-			file_put_contents($sPath, $file);
-
-			// Read temporary directory, and replace them.
-			$contents = file_get_contents($sPath);
-			file_put_contents($sPath, str_replace("%tableName%", $rep, $contents));
-
-			return fopen($this->getDataFolder() . "temp/$rep.sql", "rb");
+				$this->database = new MysqlDatabase([
+					"type"  => "mysql",
+					"mysql" => $credentials,
+				]);
+				break;
 		}
-
-		return parent::getResource($filename);
 	}
 
 	public function onEnable(): void{
@@ -83,6 +85,7 @@ class MultiEconomy extends PluginBase implements Listener {
 		}
 		$this->saveResource("lang/" . $this->getLanguageCode() . ".yml");
 
+		$this->registerDatabase();
 		$currencies = $config->get("currencies", []);
 		if(is_array($currencies)){
 			foreach($currencies as $currency => $data){

@@ -4,8 +4,6 @@ declare(strict_types = 1);
 namespace twisted\multieconomy;
 
 use twisted\multieconomy\database\Database;
-use twisted\multieconomy\database\LibAsyncDatabase;
-use twisted\multieconomy\database\NormalDatabase;
 use function abs;
 use function array_chunk;
 use function asort;
@@ -45,6 +43,7 @@ class Currency {
 		$this->startingAmount = max(0.0, $startingAmount);
 		$this->minAmount = min($minAmount, $maxAmount);
 		$this->maxAmount = max($minAmount, $maxAmount);
+		$this->database = MultiEconomy::getInstance()->database;
 
 		$this->loadDatabase();
 	}
@@ -54,33 +53,11 @@ class Currency {
 	 * Loads then caches any data from existing databases
 	 */
 	private function loadDatabase(): void{
-		$path = MultiEconomy::getInstance()->getDataFolder() . "currencies/";
-
-		$config = MultiEconomy::getInstance()->getConfig();
-		$info = $config->get("database");
-
-		switch(($provider = strtolower($info["provider"])) ?? "sqlite"){
-			case "yml":
-			case "json":
-				$this->database = new NormalDatabase($path . $this->getLowerName() . "." . $provider);
-				break;
-			case "sqlite":
-				$this->database = new LibAsyncDatabase(null, $this->getLowerName(), false);
-				break;
-			case "mysql":
-				$credentials = $info["mysql"];
-
-				$this->database = new LibAsyncDatabase([
-					"type"  => "mysql",
-					"mysql" => $credentials,
-				], $this->getLowerName(), true);
-
-				break;
-		}
+		$this->database->createCurrency($this->name);
 
 		$this->database->getAllBalance(function($player, $balance){
 			$this->cache[$player] = $balance;
-		});
+		}, $this->name);
 	}
 
 	/**
@@ -245,7 +222,7 @@ class Currency {
 
 			$valid = false;
 		}
-		$this->database->setBalance(strtolower($username), $this->cache[strtolower($username)]);
+		$this->database->setBalance(strtolower($username), $this->cache[strtolower($username)], $this->name);
 
 		return $valid;
 	}
