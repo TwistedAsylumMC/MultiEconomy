@@ -18,7 +18,7 @@ class PayCommand extends PluginCommand{
 
     public function __construct(MultiEconomy $plugin){
         $this->plugin = $plugin;
-        parent::__construct("pay", $plugin);
+        parent::__construct("paybal", $plugin);
         $this->setDescription("Pay another player money for a currency");
     }
 
@@ -31,7 +31,7 @@ class PayCommand extends PluginCommand{
 
         if(count($args) < 3){
             $sender->sendMessage($this->plugin->translateMessage("command-usage", [
-                "usage" => "/pay <target> <currency> <amount>"
+                "usage" => "/paybal <target> <currency> <amount>"
             ]));
 
             return;
