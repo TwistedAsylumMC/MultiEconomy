@@ -1,0 +1,33 @@
+---
+# Translated by @Endermanbugzjfc using Fanhuaji繁化姬（https://github.com/Fanhuaji/Sublime-Fanhuaji）a plugin for Sublime Text 3
+
+# 對於顏色，使用＆
+prefix: "&8[&9MultiEconomy&8]&7"
+
+# 錯誤訊息
+target-not-played: "{prefix} &b{target} &7從未進入過本伺服器"
+currency-not-found: "{prefix} &b{currency}&7 沒找到. 流通貨幣列表: &b{currencies}"
+use-command-in-game: "{prefix} &7在遊戲中使用這個命令"
+no-currencies-configured: "{prefix} &7當前沒有配置貨幣"
+value-not-valid: "{prefix} 輸入的值無效"
+not-enough-money: "{prefix} 您沒有足夠的錢"
+command-usage: "{prefix} 使用 &b{usage}"
+cannot-pay-self: "{prefix} 您不能支付給自己"
+no-top-balances: "{prefix} &b{currency}沒有餘額 (頁 &b{page}&7)"
+
+# 成功訊息
+list-currencies: "{prefix} 顯示您&b所有&7貨幣的餘額"
+list-currencies-other: "{prefix} 顯示 &b{target}&7 的&b所有&7貨幣的餘額"
+own-balance: "{prefix} 您的 &b{currency} 餘額&7為：&b{balance}"
+other-balance: "{prefix} &b{target} &7的 &b{currency} 餘額&7為：&b{balance}"
+payment-sent: "{prefix} 您已經支付給 &b{target} &7&b{currency} {amount}  "
+payment-received: "{prefix} &b{target} &7發送給了您 &b{amount} &7&b{currency}"
+own-balance-set: "{prefix} 您的 &b{currency} 餘額&7已被設置為 &b{balance}"
+target-balance-set: "{prefix} &b{target} &7的 &b{currency} 餘額&7已被設置為 &b{balance}"
+own-balance-added: "{prefix} &b{amount} &7已經加到您的 &b{currency} 餘額中了"
+target-balance-added: "{prefix} &b{amount} &7已添加到 &b{target} 的 &b{currency} 餘額中"
+own-balance-removed: "{prefix} &b{amount} &7已從 &b{currency} 的餘額中移除"
+target-balance-removed: "{prefix} &b{amount} &7已從 &b{target} 的 &b{currency} 餘額中移除"
+top-balances-title: "{prefix} 顯示 &b{currency} &7貨幣餘額前十位 (Page &b{page}&7)"
+top-balances-format: "&b{place}&7. &b{player}&7: &b{balance}"
+...
