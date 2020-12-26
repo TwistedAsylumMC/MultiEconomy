@@ -1,5 +1,5 @@
 <?php
-declare(strict_types=1);
+declare(strict_types = 1);
 
 namespace twisted\multieconomy\commands;
 
@@ -11,83 +11,83 @@ use function count;
 use function implode;
 use function strtolower;
 
-class PayCommand extends PluginCommand{
+class PayCommand extends PluginCommand {
 
-    /** @var MultiEconomy $plugin */
-    private $plugin;
+	/** @var MultiEconomy $plugin */
+	private $plugin;
 
-    public function __construct(MultiEconomy $plugin){
-        $this->plugin = $plugin;
-        parent::__construct("pay", $plugin);
-        $this->setDescription("Pay another player money for a currency");
-    }
+	public function __construct(MultiEconomy $plugin){
+		$this->plugin = $plugin;
+		parent::__construct("pay", $plugin);
+		$this->setDescription("Pay another player money for a currency");
+	}
 
-    public function execute(CommandSender $sender, string $commandLabel, array $args) : void{
-        if(empty($currencies = $this->plugin->getCurrencies())){
-            $sender->sendMessage($this->plugin->translateMessage("no-currencies-configured"));
+	public function execute(CommandSender $sender, string $commandLabel, array $args): void{
+		if(empty($currencies = $this->plugin->getCurrencies())){
+			$sender->sendMessage($this->plugin->translateMessage("no-currencies-configured"));
 
-            return;
-        }
+			return;
+		}
 
-        if(count($args) < 3){
-            $sender->sendMessage($this->plugin->translateMessage("command-usage", [
-                "usage" => "/pay <target> <currency> <amount>"
-            ]));
+		if(count($args) < 3){
+			$sender->sendMessage($this->plugin->translateMessage("command-usage", [
+				"usage" => "/pay <target> <currency> <amount>",
+			]));
 
-            return;
-        }
+			return;
+		}
 
-        if(!($target = ($sender->getServer()->getPlayer($args[0]) ?? $sender->getServer()->getOfflinePlayer($args[0])))->hasPlayedBefore()){
-            $sender->sendMessage($this->plugin->translateMessage("target-not-played", [
-                "target" => $args[0]
-            ]));
+		if(!($target = ($sender->getServer()->getPlayer($args[0]) ?? $sender->getServer()->getOfflinePlayer($args[0])))->hasPlayedBefore()){
+			$sender->sendMessage($this->plugin->translateMessage("target-not-played", [
+				"target" => $args[0],
+			]));
 
-            return;
-        }
+			return;
+		}
 
-        if($sender->getName() === $target->getName()){
-            $sender->sendMessage($this->plugin->translateMessage("cannot-pay-self"));
+		if($sender->getName() === $target->getName()){
+			$sender->sendMessage($this->plugin->translateMessage("cannot-pay-self"));
 
-            return;
-        }
+			return;
+		}
 
-        if(($currency = $currencies[strtolower($args[1])] ?? null) === null){
-            $sender->sendMessage($this->plugin->translateMessage("currency-not-found", [
-                "currency" => $args[1],
-                "currencies" => implode(", ", $this->plugin->getCurrencyNames())
-            ]));
+		if(($currency = $currencies[strtolower($args[1])] ?? null) === null){
+			$sender->sendMessage($this->plugin->translateMessage("currency-not-found", [
+				"currency"   => $args[1],
+				"currencies" => implode(", ", $this->plugin->getCurrencyNames()),
+			]));
 
-            return;
-        }
+			return;
+		}
 
-        $amount = (float) $args[2];
-        if($amount <= 0 || $amount > $currency->getMaxAmount()){
-            $sender->sendMessage($this->plugin->translateMessage("value-not-valid"));
+		$amount = (float)$args[2];
+		if($amount <= 0 || $amount > $currency->getMaxAmount()){
+			$sender->sendMessage($this->plugin->translateMessage("value-not-valid"));
 
-            return;
-        }
+			return;
+		}
 
-        if($currency->getBalance($sender->getName()) < $amount){
-            $sender->sendMessage($this->plugin->translateMessage("not-enough-money"));
+		if($currency->getBalance($sender->getName()) < $amount){
+			$sender->sendMessage($this->plugin->translateMessage("not-enough-money"));
 
-            return;
-        }
+			return;
+		}
 
-        $currency->removeFromBalance($sender->getName(), $amount);
-        $currency->addToBalance($target->getName(), $amount);
+		$currency->removeFromBalance($sender->getName(), $amount);
+		$currency->addToBalance($target->getName(), $amount);
 
-        $sender->sendMessage($this->plugin->translateMessage("payment-sent", [
-            "target" => $target->getName(),
-            "currency" => $currency->getName(),
-            "amount" => $currency->formatBalance($amount)
-        ]));
+		$sender->sendMessage($this->plugin->translateMessage("payment-sent", [
+			"target"   => $target->getName(),
+			"currency" => $currency->getName(),
+			"amount"   => $currency->formatBalance($amount),
+		]));
 
-        if($target instanceof Player){
-            $target->sendMessage($this->plugin->translateMessage("payment-received", [
-                "target" => $sender->getName(),
-                "currency" => $currency,
-                "amount" => $currency->formatBalance($amount)
-            ]));
-        }
-    }
+		if($target instanceof Player){
+			$target->sendMessage($this->plugin->translateMessage("payment-received", [
+				"target"   => $sender->getName(),
+				"currency" => $currency,
+				"amount"   => $currency->formatBalance($amount),
+			]));
+		}
+	}
 }
